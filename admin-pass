@@ -1,0 +1,22 @@
+ Purpose	   Username	    Password
+
+SonarQube Web UI	-admin	  Admin@123456
+PostgreSQL database-	sonar 	admin123
+
+
+**
+                 Windows PC
+                     |
+                     | Browser
+                     |
+                     v
+           http://192.168.3.83:9000
+                     |
+                     v
+              AlmaLinux Server
+                     |
+                     v
+               SonarQube :9000
+                     |
+                     v
+             PostgreSQL :5432
