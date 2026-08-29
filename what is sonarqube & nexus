@@ -1,0 +1,172 @@
+What is SonarQube?
+
+SonarQube is a code quality and security analysis tool.
+
+It scans your source code and identifies problems such as:
+
+🐛 Bugs
+🔐 Security vulnerabilities
+⚠️ Code smells
+🔄 Duplicate code
+📊 Code coverage
+🧹 Poor coding practices
+🚨 Security hotspots
+
+The main purpose is to find problems before the application is deployed.
+
+
+What is Nexus?
+
+Nexus Repository is an artifact/repository manager.
+
+Its job is to store and manage the files/packages that your build process creates or needs.
+
+Think of it like a warehouse for your software artifacts.
+
+For example:
+
+Developer
+   ↓
+GitHub
+   ↓
+Jenkins
+   ↓
+Build
+   ↓
+Nexus Repository
+   ↓
+Deployment
+Why do we use Nexus?
+
+Suppose Jenkins builds your application.
+
+After the build, you may have:
+
+myapp.jar
+myapp.war
+myapp.zip
+Docker image
+npm package
+Python package
+
+Instead of keeping these files only on the Jenkins server, you can store them in Nexus.
+
+Then other servers or deployment pipelines can download the required version from Nexus.
+
+Example
+
+Jenkins builds:
+
+notes-app-1.0.jar
+
+Jenkins uploads it:
+
+              Nexus
+                │
+       ┌────────┼────────┐
+       │        │        │
+    1.0.jar   1.1.jar   2.0.jar
+
+Later, your deployment server can download version 1.1 without rebuilding the application.
+
+Nexus with Docker
+
+This is one of the most useful use cases for you.
+
+Normally you might build:
+
+docker build -t notes-app:latest .
+
+But you don't want the Docker image to exist only on the Jenkins machine.
+
+You can push it to a Nexus Docker registry:
+
+GitHub
+   ↓
+Jenkins
+   ↓
+Docker Build
+   ↓
+notes-app:1.0
+   ↓
+Nexus Docker Registry
+
+Then your production server can pull:
+
+docker pull nexus-server:8083/notes-app:1.0
+
+So Nexus becomes your private Docker image registry.
+
+Nexus vs GitHub
+
+This is an important difference.
+
+GitHub
+
+Stores your source code:
+
+app.py
+index.html
+package.json
+Dockerfile
+Jenkinsfile
+Nexus
+
+Stores your built artifacts/packages:
+
+app.jar
+app.war
+Docker images
+npm packages
+Maven packages
+Python packages
+
+Think:
+
+GitHub = Source Code
+Nexus  = Built Software / Packages
+Nexus vs Docker Hub
+
+They can serve a similar purpose for Docker images.
+
+Docker Hub
+
+Public/cloud-hosted registry:
+
+Jenkins
+   ↓
+Docker Hub
+   ↓
+Production
+Nexus
+
+You can run your own private repository:
+
+Jenkins
+   ↓
+Your Nexus Server
+   ↓
+Production
+
+This is useful when an organization doesn't want its Docker images or packages publicly available.
+
+
+
+
+1. Checkout code
+        ↓
+2. Build application
+        ↓
+3. Run tests
+        ↓
+4. SonarQube scan
+        ↓
+5. Quality Gate
+        ↓
+6. Docker build
+        ↓
+7. Docker login to Nexus
+        ↓
+8. Docker push to Nexus
+        ↓
+9. Deploy
