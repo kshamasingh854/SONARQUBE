@@ -1,0 +1,152 @@
+#vi /var/lib/pgsql/data/postgresql.conf
+password_encryption = md5
+
+*Your final configuration should be
+*postgresql.conf:
+
+password_encryption = scram-sha-256 (shoud be uncommented)
+
+and:
+
+#pg_hba.conf:
+
+#local   all   all                     peer
+#host    all   all   127.0.0.1/32      scram-sha-256
+#host    all   all   ::1/128           scram-sha-256
+
+
+*NOW HOW TO USE THE DATABASE
+Your current SonarQube database details are:
+
+Database : sonarqube
+Username : sonar
+Password : admin123
+Host     : 127.0.0.1
+Port     : 5432
+
+1. Login to PostgreSQL as the administrator
+On your AlmaLinux server, run:
+
+#sudo -u postgres psql
+*You should see:
+
+psql (13.23)
+Type "help" for help.
+postgres=#
+
+*You are now inside PostgreSQL.
+2. See all databases
+#Inside PostgreSQL:
+
+\l
+
+*You should see:
+sonarqube
+postgres
+template0
+template1
+3. See all users
+Run:
+
+#\du
+*You should see your sonar user.
+Something like:
+
+ Role name | Attributes
+-----------+-----------
+ postgres  | Superuser
+ sonar     |
+4. Login directly as the SonarQube user
+
+Exit PostgreSQL first:
+#\q
+*Then:
+
+#psql -h 127.0.0.1 -p 5432 -U sonar -d sonarqube -W
+
+*It will ask:
+
+Password:
+
+Enter:
+
+admin123
+
+If everything is correct, you'll get:
+
+sonarqube=>
+
+You are now logged into the sonarqube database as the sonar user.
+
+
+5. Check which user and database you're using
+Inside:
+
+sonarqube=>
+*run:
+#SELECT current_database(), current_user;
+
+You should get:
+
+ current_database | current_user
+------------------+--------------
+ sonarqube        | sonar
+6. Create a table
+
+For learning PostgreSQL, you can create a test table:
+
+#CREATE TABLE employees (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(100),
+    department VARCHAR(100)
+);
+
+*You should see:
+CREATE TABLE
+Check tables:
+
+#\dt
+
+*You should see:
+ employees
+
+7. Insert data
+#INSERT INTO employees (name, department)
+VALUES
+('Rahul', 'IT'),
+('Amit', 'DevOps'),
+('Priya', 'HR');
+
+*Check the data:
+#SELECT * FROM employees;
+
+You'll get something like:
+
+ id | name  | department
+----+-------+------------
+  1 | Rahul | IT
+  2 | Amit  | DevOps
+  3 | Priya | HR
+
+8. Update data
+For example:
+
+#UPDATE employees
+SET department = 'Cloud'
+WHERE name = 'Amit';
+
+Then:
+#SELECT * FROM employees;
+
+9. Delete data
+For example:
+
+#DELETE FROM employees
+WHERE name = 'Priya';
+
+10. Exit PostgreSQL
+#\q
+
+*You'll return to:
+
+[root@localhost ~]#
